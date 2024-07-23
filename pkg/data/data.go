@@ -1,18 +1,36 @@
 package data
 
-import "github.com/trenton42/zettel/pkg/types"
+import (
+	"os"
+	"time"
+
+	"github.com/trenton42/zettel/pkg/types"
+)
 
 type Data struct {
-	pth string
+	pth   string
+	index *types.Index
 }
 
 func New(pth string) (*Data, error) {
-	return &Data{
+	_, err := os.Stat(pth)
+	if err != nil {
+		err = os.Mkdir(pth, 0744)
+		if err != nil {
+			return nil, err
+		}
+	}
+	d := &Data{
 		pth: pth,
-	}, nil
+	}
+	return d, d.loadIndex()
 }
 
-func (d *Data) Create(_ types.Zettel) error {
+func (d *Data) Create(z types.Zettel) error {
+	z.Created = time.Now()
+	z.Updated = z.Created
+	z.ID = d.NextIndex()
+	d.saveZettel(z)
 	return nil
 }
 
@@ -20,14 +38,18 @@ func (d *Data) Update(_ int, _ types.Zettel) error {
 	return nil
 }
 
-func (d *Data) Get(_ int) (types.Zettel, error) {
-	return types.Zettel{}, nil
+func (d *Data) Get(id int) (types.Zettel, error) {
+	return d.loadZettel(id)
 }
 
-func (d *Data) Delete(_ int) error {
-	return nil
+func (d *Data) Delete(id int) error {
+	return d.deleteZettel(id)
 }
 
 func (d *Data) Query() ([]types.Zettel, error) {
 	return nil, nil
+}
+
+func (d *Data) List() (map[int]string, error) {
+	return d.index.IDs, nil
 }

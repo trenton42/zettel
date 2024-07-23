@@ -9,7 +9,8 @@ import (
 )
 
 func main() {
-	db, err := data.New("~/Documents/zettel")
+	home := os.Getenv("HOME")
+	db, err := data.New(fmt.Sprintf("%s/Documents/zettel", home))
 	if err != nil {
 		fmt.Printf("Error setting up db connection: %s\n", err)
 		os.Exit(1)
