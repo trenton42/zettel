@@ -34,7 +34,15 @@ func (d *Data) Create(z types.Zettel) error {
 	return nil
 }
 
-func (d *Data) Update(_ int, _ types.Zettel) error {
+func (d *Data) Update(id int, z types.Zettel) error {
+	old, err := d.loadZettel(id)
+	if err != nil {
+		return err
+	}
+	old.Body = z.Body
+	old.Title = z.Title
+	old.Updated = time.Now()
+	d.saveZettel(old)
 	return nil
 }
 

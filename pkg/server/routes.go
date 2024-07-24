@@ -11,6 +11,8 @@ func (s *Server) registerRoutes() {
 	g.GET("/zettel/:id", s.GetZettel)
 	g.GET("/zettel/", s.ListZettel)
 	g.POST("/zettel/", s.CreateZettel)
+	g.POST("/zettel/:id", s.UpdateZettel)
+	g.DELETE("/zettel/:id", s.DeleteZettel)
 
 	s.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "It ok.")
